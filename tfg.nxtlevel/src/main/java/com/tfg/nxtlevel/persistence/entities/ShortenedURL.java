@@ -2,9 +2,12 @@ package com.tfg.nxtlevel.persistence.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -34,6 +37,12 @@ public class ShortenedURL {
 	private String shortUrl;
 
 	/**
+	 * Conexión con el usuario
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "C_USER_URL")
+	public User userUrl;
+	/**
 	 * Fecha de creación de la URL acortada
 	 */
 	@Column(name = "C_DATE_CREATED", nullable = false)
@@ -51,6 +60,20 @@ public class ShortenedURL {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the userUrl
+	 */
+	public User getUserUrl() {
+		return userUrl;
+	}
+
+	/**
+	 * @param userUrl the userUrl to set
+	 */
+	public void setUserUrl(User userUrl) {
+		this.userUrl = userUrl;
 	}
 
 	/**
@@ -96,6 +119,8 @@ public class ShortenedURL {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param id
 	 * @param originalUrl
 	 * @param shortUrl
@@ -110,7 +135,7 @@ public class ShortenedURL {
 	}
 
 	/**
-	 * 
+	 * Constructor por defecto
 	 */
 	public ShortenedURL() {
 		super();

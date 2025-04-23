@@ -1,12 +1,16 @@
 package com.tfg.nxtlevel.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Clase para enviar el token como respuesta
  */
 public class TokenResponse {
 
+	@JsonProperty("access_token")
 	private String jwtToken;
 
+	@JsonProperty("refresh_token")
 	private String refreshToken;
 
 	/**

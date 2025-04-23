@@ -147,4 +147,29 @@ public class Token {
 		this.user = user;
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param token
+	 * @param tokenType
+	 * @param revoked
+	 * @param expired
+	 * @param user
+	 */
+	public Token(String token, TokenType tokenType, boolean revoked, boolean expired, User user) {
+		super();
+		this.token = token;
+		this.tokenType = tokenType;
+		this.revoked = revoked;
+		this.expired = expired;
+		this.user = user;
+	}
+
+	/**
+	 * Constructor por defecto
+	 */
+	public Token() {
+		super();
+	}
+
 }

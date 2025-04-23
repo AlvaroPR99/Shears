@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 
+/**
+ * Repositorio de la entidad ShortenedURL
+ */
 @Repository
 public interface ShortenedRepository extends JpaRepository<ShortenedURL, Long> {
 

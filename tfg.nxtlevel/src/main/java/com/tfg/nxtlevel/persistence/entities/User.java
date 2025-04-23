@@ -51,6 +51,12 @@ public class User {
 	private List<Token> tokens;
 
 	/**
+	 * Conexión con con las url
+	 */
+	@OneToMany(mappedBy = "userUrl", fetch = FetchType.LAZY)
+	private List<ShortenedURL> userUrl;
+
+	/**
 	 * @return the id
 	 */
 	public Long getId() {
@@ -107,6 +113,20 @@ public class User {
 	}
 
 	/**
+	 * @return the userUrl
+	 */
+	public List<ShortenedURL> getUserUrl() {
+		return userUrl;
+	}
+
+	/**
+	 * @param userUrl the userUrl to set
+	 */
+	public void setUserUrl(List<ShortenedURL> userUrl) {
+		this.userUrl = userUrl;
+	}
+
+	/**
 	 * @return the tokens
 	 */
 	public List<Token> getTokens() {
@@ -121,6 +141,8 @@ public class User {
 	}
 
 	/**
+	 * Constructor
+	 * 
 	 * @param name
 	 * @param email
 	 * @param password
@@ -130,6 +152,23 @@ public class User {
 		this.name = name;
 		this.email = email;
 		this.password = password;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param email
+	 */
+	public User(String email) {
+		super();
+		this.email = email;
+	}
+
+	/**
+	 * Constructor por defecto
+	 */
+	public User() {
+		super();
 	}
 
 }

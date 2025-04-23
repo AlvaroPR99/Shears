@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tfg.nxtlevel.services.impl.ShortenedServicesImpl;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
 //Permitir peticiones desde cualquier origen (Habilita el CORS)
 @CrossOrigin(origins = "*")
 public class ShortenedController {

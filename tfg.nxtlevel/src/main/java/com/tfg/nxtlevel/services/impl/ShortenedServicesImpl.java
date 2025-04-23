@@ -4,10 +4,14 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
+import com.tfg.nxtlevel.persistence.entities.User;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
+import com.tfg.nxtlevel.persistence.repositories.UserRepository;
 import com.tfg.nxtlevel.services.inter.ShortenedServices;
 
 /**
@@ -21,6 +25,9 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 */
 	@Autowired
 	private ShortenedRepository shortenedRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	/**
 	 * Base que tendrán todas la URL
@@ -36,10 +43,23 @@ public class ShortenedServicesImpl implements ShortenedServices {
 			return shortenedRepository.findByShortUrl(originalUrl).get().getShortUrl();
 		}
 
+		// Autenticación del usuario
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		// Obtención del user para guardar las url acortadas en su usuario
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+		// Se genera la url acortada
 		String shortUrl = generatedShortUrl();
 
 		// Creamos un nuevo objeto para guardarlo en la bd
-		ShortenedURL shortenedUrl = new ShortenedURL(null, originalUrl, shortUrl, System.currentTimeMillis());
+		ShortenedURL shortenedUrl = new ShortenedURL();
+		shortenedUrl.setOriginalUrl(originalUrl);
+		shortenedUrl.setShortUrl(shortUrl);
+		shortenedUrl.setDateCreated(System.currentTimeMillis());
+		shortenedUrl.setUserUrl(user);
+
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
 		return BASE_URL + shortUrl;
@@ -58,10 +78,22 @@ public class ShortenedServicesImpl implements ShortenedServices {
 			return shortenedRepository.findByShortUrl(originalUrl).get().getShortUrl();
 		}
 
+		// Autenticación del usuario
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		// Obtención del user para guardar las url acortadas en su usuario
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
 		String shortUrl = generatedCustomShortUrl(customUrl);
 
 		// Creamos un nuevo objeto para guardarlo en la bd
-		ShortenedURL shortenedUrl = new ShortenedURL(null, originalUrl, shortUrl, System.currentTimeMillis());
+		ShortenedURL shortenedUrl = new ShortenedURL();
+		shortenedUrl.setOriginalUrl(originalUrl);
+		shortenedUrl.setShortUrl(shortUrl);
+		shortenedUrl.setDateCreated(System.currentTimeMillis());
+		shortenedUrl.setUserUrl(user);
+
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
 		return BASE_URL + shortUrl;
