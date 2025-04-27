@@ -1,5 +1,6 @@
 package com.tfg.nxtlevel.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -51,7 +52,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		// Se genera la url acortada
-		String shortUrl = generatedShortUrl();
+		String shortUrl = BASE_URL + generatedShortUrl();
 
 		// Creamos un nuevo objeto para guardarlo en la bd
 		ShortenedURL shortenedUrl = new ShortenedURL();
@@ -85,7 +86,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		User user = userRepository.findByEmail(userEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		String shortUrl = generatedCustomShortUrl(customUrl);
+		String shortUrl = BASE_URL + generatedCustomShortUrl(customUrl);
 
 		// Creamos un nuevo objeto para guardarlo en la bd
 		ShortenedURL shortenedUrl = new ShortenedURL();
@@ -111,6 +112,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 */
 	public String generatedShortUrl() {
 		// Todos los caracteres posibles de
+		// TODO: Hay que cambiarlo por una variable
 		String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		Random random = new Random();
 		// Se crea un objeto. Este objeto devueve la URL acortada
@@ -131,10 +133,44 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		if (custom == null || custom.isEmpty()) {
 			throw new IllegalArgumentException("El código no puede estar vacío");
 		}
+		// TODO: Cambiar la validación (Solo existe si ese usuario creó una igual)
 		if (shortenedRepository.existsByShortUrl(custom)) {
 			throw new IllegalArgumentException("Ya existe esta URL");
 		}
 		return custom;
+	}
+
+	/**
+	 * Busca en concreto una url del usuario
+	 * 
+	 * @param shortUrl
+	 * @return
+	 */
+	public ShortenedURL getUserUrl(String shortUrl) {
+
+		// Obtiene el email
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		return shortenedRepository.findByShortUrlAndUserUrl(shortUrl, user)
+				.orElseThrow(() -> new RuntimeException("Short URL not found for the current user"));
+	}
+
+	/**
+	 * Obtiene todas las url del usuario
+	 * 
+	 * @return List<ShortenedURL>
+	 */
+	public List<ShortenedURL> getAllUserUrl() {
+		// Obtiene el email
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		return shortenedRepository.findAllByUserUrl(user);
 	}
 
 }

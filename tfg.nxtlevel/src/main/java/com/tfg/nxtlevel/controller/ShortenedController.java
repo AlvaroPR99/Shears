@@ -1,5 +1,6 @@
 package com.tfg.nxtlevel.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
+import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
+import com.tfg.nxtlevel.persistence.repositories.UserRepository;
 import com.tfg.nxtlevel.services.impl.ShortenedServicesImpl;
 
 @RestController
@@ -24,6 +28,12 @@ public class ShortenedController {
 
 	@Autowired
 	private ShortenedServicesImpl shortenedService;
+
+	@Autowired
+	private ShortenedRepository shortenedRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public ShortenedController(ShortenedServicesImpl shortenedService) {
 		this.shortenedService = shortenedService;
@@ -66,6 +76,23 @@ public class ShortenedController {
 		// Devuelve la solicitud https del original
 		return originalUrl.map(url -> ResponseEntity.status(HttpStatus.FOUND).header("Location", url).build())
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+	}
+
+	/**
+	 * Obtiene todas las url del usuario
+	 * 
+	 * @return List<ShortenedURL>
+	 */
+	@GetMapping("/user-urls")
+	public List<ShortenedURL> getUserAllUrl() {
+
+		return shortenedService.getAllUserUrl();
+	}
+
+	@GetMapping("/user-urls/{shortCode}")
+	public ShortenedURL getOneUserUrl(@PathVariable String shortUrl) {
+
+		return shortenedService.getUserUrl(shortUrl);
 	}
 
 }
