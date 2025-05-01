@@ -1,14 +1,23 @@
 package com.tfg.nxtlevel.services.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.tfg.nxtlevel.dto.ShortenedURLDTO;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.entities.User;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
@@ -63,7 +72,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
-		return BASE_URL + shortUrl;
+		return shortUrl;
 	}
 
 	/**
@@ -97,7 +106,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
-		return BASE_URL + shortUrl;
+		return shortUrl;
 	}
 
 	/**
@@ -163,14 +172,36 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 * 
 	 * @return List<ShortenedURL>
 	 */
-	public List<ShortenedURL> getAllUserUrl() {
+	public List<ShortenedURLDTO> getAllUserUrl() {
 		// Obtiene el email
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		User user = userRepository.findByEmail(userEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-		return shortenedRepository.findAllByUserUrl(user);
+		// Busca todos las url de ese email desde el dto
+		return shortenedRepository.findAllByUserUrl(user).stream()
+				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), url.getShortUrl())).collect(Collectors.toList());
+	}
+
+	/**
+	 * Generera el qr
+	 * 
+	 * @param text
+	 * @param width
+	 * @param height
+	 * @return
+	 * @throws WriterException
+	 * @throws IOException
+	 */
+	public byte[] generateQR(String text, int width, int height) throws WriterException, IOException {
+		QRCodeWriter qrCodeWriter = new QRCodeWriter();
+		BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+
+		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+
+		return pngOutputStream.toByteArray();
 	}
 
 }

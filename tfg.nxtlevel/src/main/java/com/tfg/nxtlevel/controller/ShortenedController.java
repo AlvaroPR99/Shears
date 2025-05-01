@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.tfg.nxtlevel.dto.ShortenedURLDTO;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
 import com.tfg.nxtlevel.persistence.repositories.UserRepository;
@@ -84,7 +88,7 @@ public class ShortenedController {
 	 * @return List<ShortenedURL>
 	 */
 	@GetMapping("/user-urls")
-	public List<ShortenedURL> getUserAllUrl() {
+	public List<ShortenedURLDTO> getUserAllUrl() {
 
 		return shortenedService.getAllUserUrl();
 	}
@@ -93,6 +97,30 @@ public class ShortenedController {
 	public ShortenedURL getOneUserUrl(@PathVariable String shortUrl) {
 
 		return shortenedService.getUserUrl(shortUrl);
+	}
+
+	/**
+	 * Genera el qr de la url acortada
+	 * 
+	 * @param shortCode
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/qr/{shortCode}")
+	public ResponseEntity<byte[]> getQrCode(@PathVariable String shortCode) throws Exception {
+
+		ShortenedURL url = shortenedRepository.findByShortUrl(shortCode)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "URL no encontrada"));
+
+		String fullShortUrl = shortCode;
+
+		byte[] qrImage = shortenedService.generateQR(fullShortUrl, 250, 250);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_PNG);
+		headers.setContentLength(qrImage.length);
+
+		return new ResponseEntity<>(qrImage, headers, HttpStatus.OK);
 	}
 
 }
