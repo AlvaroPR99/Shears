@@ -48,7 +48,6 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 * Acorta la URL mediante la URL original que se le muestra
 	 */
 	public String shortUrl(String originalUrl) {
-	
 
 		// Autenticación del usuario
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -80,7 +79,6 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 * @return BASE_URL + shortUrl;
 	 */
 	public String shortUrlCustom(String originalUrl, String customUrl) {
-		
 
 		// Autenticación del usuario
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -90,6 +88,11 @@ public class ShortenedServicesImpl implements ShortenedServices {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		String shortUrl = BASE_URL + generatedCustomShortUrl(customUrl);
+
+		// Valida si el usuario tiene otra url con el mismo nombre
+		if (shortenedRepository.existsByShortUrlAndUserUrl(shortUrl, user)) {
+			throw new IllegalArgumentException("Ya existe esta URL");
+		}
 
 		// Creamos un nuevo objeto para guardarlo en la bd
 		ShortenedURL shortenedUrl = new ShortenedURL();
@@ -115,7 +118,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 */
 	public String generatedShortUrl() {
 		// Todos los caracteres posibles de
-		// TODO: Hay que cambiarlo por una variable
+
 		String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		Random random = new Random();
 		// Se crea un objeto. Este objeto devueve la URL acortada
@@ -137,13 +140,10 @@ public class ShortenedServicesImpl implements ShortenedServices {
 			throw new IllegalArgumentException("El código no puede estar vacío");
 		}
 		// Obtiene el email
-				String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = userRepository.findByEmail(userEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-		// TODO: Cambiar la validación (Solo existe si ese usuario creó una igual)
-		if (shortenedRepository.existsByShortUrlAndUserUrl(custom, user)) {
-			throw new IllegalArgumentException("Ya existe esta URL");
-		}
+
 		return custom;
 	}
 

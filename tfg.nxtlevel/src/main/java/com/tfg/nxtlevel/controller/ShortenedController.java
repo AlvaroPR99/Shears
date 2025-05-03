@@ -68,7 +68,7 @@ public class ShortenedController {
 	}
 
 	/**
-	 * Te redirige a la página original de url
+	 * Te redirige a la página original de url original
 	 * 
 	 * @param shortCode
 	 * @return
