@@ -9,12 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 /**
  * Clase entidad para el acortador de URL
  */
 @Entity
-@Table(name = "T_SHORTENED_URL")
+@Table(name = "T_SHORTENED_URL",
+uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"C_SHORT_URL", "C_USER_URL"})
+    })
 public class ShortenedURL {
 
 	/**
@@ -27,13 +31,13 @@ public class ShortenedURL {
 	/**
 	 * URL original
 	 */
-	@Column(name = "C_ORIGINAL_URL", nullable = false, unique = true)
+	@Column(name = "C_ORIGINAL_URL", nullable = false)
 	private String originalUrl;
 
 	/**
 	 * URL acortada
 	 */
-	@Column(name = "C_SHORT_URL", nullable = false, unique = true)
+	@Column(name = "C_SHORT_URL", nullable = false)
 	private String shortUrl;
 
 	/**

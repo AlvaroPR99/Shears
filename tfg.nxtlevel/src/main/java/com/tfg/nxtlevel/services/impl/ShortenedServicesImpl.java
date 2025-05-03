@@ -48,10 +48,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 * Acorta la URL mediante la URL original que se le muestra
 	 */
 	public String shortUrl(String originalUrl) {
-		if (shortenedRepository.existsByOriginalUrl(originalUrl)) {
-			// Si ya existe la URL te trae la URL acortada
-			return shortenedRepository.findByShortUrl(originalUrl).get().getShortUrl();
-		}
+	
 
 		// Autenticación del usuario
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -83,10 +80,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	 * @return BASE_URL + shortUrl;
 	 */
 	public String shortUrlCustom(String originalUrl, String customUrl) {
-		if (shortenedRepository.existsByOriginalUrl(originalUrl)) {
-			// Si ya existe la URL te trae la URL acortada
-			return shortenedRepository.findByShortUrl(originalUrl).get().getShortUrl();
-		}
+		
 
 		// Autenticación del usuario
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -142,8 +136,12 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		if (custom == null || custom.isEmpty()) {
 			throw new IllegalArgumentException("El código no puede estar vacío");
 		}
+		// Obtiene el email
+				String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 		// TODO: Cambiar la validación (Solo existe si ese usuario creó una igual)
-		if (shortenedRepository.existsByShortUrl(custom)) {
+		if (shortenedRepository.existsByShortUrlAndUserUrl(custom, user)) {
 			throw new IllegalArgumentException("Ya existe esta URL");
 		}
 		return custom;

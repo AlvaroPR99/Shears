@@ -55,4 +55,12 @@ public interface ShortenedRepository extends JpaRepository<ShortenedURL, Long> {
 	 * @return Optional<ShortenedURL>
 	 */
 	Optional<ShortenedURL> findByShortUrlAndUserUrl(String shortUrl, User user);
+	
+	/**
+	 * Busca si existe esa url corta
+	 * @param shortUrl
+	 * @param user
+	 * @return boolean
+	 */
+	boolean existsByShortUrlAndUserUrl(String shortUrl, User user);
 }
