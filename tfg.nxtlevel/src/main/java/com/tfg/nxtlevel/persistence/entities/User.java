@@ -2,6 +2,7 @@ package com.tfg.nxtlevel.persistence.entities;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,13 +48,13 @@ public class User {
 	/**
 	 * Conexión con token
 	 */
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Token> tokens;
 
 	/**
 	 * Conexión con con las url
 	 */
-	@OneToMany(mappedBy = "userUrl", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "userUrl", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<ShortenedURL> userUrl;
 
 	/**

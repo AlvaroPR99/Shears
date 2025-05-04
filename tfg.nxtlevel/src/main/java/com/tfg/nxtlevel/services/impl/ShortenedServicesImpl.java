@@ -147,25 +147,6 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		return custom;
 	}
 
-	// TODO: Borrar este método
-	/**
-	 * Busca en concreto una url del usuario
-	 * 
-	 * @param shortUrl
-	 * @return
-	 */
-	public ShortenedURL getUserUrl(String shortUrl) {
-
-		// Obtiene el email
-		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-		User user = userRepository.findByEmail(userEmail)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-		return shortenedRepository.findByShortUrlAndUserUrl(shortUrl, user)
-				.orElseThrow(() -> new RuntimeException("Short URL not found for the current user"));
-	}
-
 	/**
 	 * Obtiene todas las url del usuario
 	 * 
@@ -204,17 +185,19 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		return pngOutputStream.toByteArray();
 	}
 
+	// TODO: Hacer método para borrar URL
 	/**
-	 * Decodifica la url para obtener la ultima parte
-	 * 
-	 * @param url
-	 * @return
+	 * Método para borrar el usuario
 	 */
-	public String decodeUrl(String url) {
-		if (url == null || !url.contains("/")) {
-			return null;
-		}
-		return url.substring(url.lastIndexOf('/') + 1);
+	public void deleteUser() {
+
+		// Obtiene el email
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		userRepository.delete(user);
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.tfg.nxtlevel.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.tfg.nxtlevel.dto.ShortenedURLDTO;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
 import com.tfg.nxtlevel.persistence.repositories.UserRepository;
@@ -83,23 +82,6 @@ public class ShortenedController {
 	}
 
 	/**
-	 * Obtiene todas las url del usuario
-	 * 
-	 * @return List<ShortenedURL>
-	 */
-	@GetMapping("/user-urls")
-	public List<ShortenedURLDTO> getUserAllUrl() {
-
-		return shortenedService.getAllUserUrl();
-	}
-
-	@GetMapping("/user-urls/{shortCode}")
-	public ShortenedURL getOneUserUrl(@PathVariable String shortUrl) {
-
-		return shortenedService.getUserUrl(shortUrl);
-	}
-
-	/**
 	 * Genera el qr de la url acortada
 	 * 
 	 * @param shortCode
@@ -121,6 +103,18 @@ public class ShortenedController {
 		headers.setContentLength(qrImage.length);
 
 		return new ResponseEntity<>(qrImage, headers, HttpStatus.OK);
+	}
+
+	// TODO: Mirar si se puede cambiar de controlador
+	/**
+	 * Método para eliminar usuario
+	 * 
+	 * @return ResponseEntity
+	 */
+	@DeleteMapping("/delete")
+	public ResponseEntity<?> deleteUser() {
+		shortenedService.deleteUser();
+		return ResponseEntity.ok("Usuario eliminado correctamente");
 	}
 
 }
