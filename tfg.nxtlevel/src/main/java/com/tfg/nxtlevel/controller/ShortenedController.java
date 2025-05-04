@@ -117,4 +117,21 @@ public class ShortenedController {
 		return ResponseEntity.ok("Usuario eliminado correctamente");
 	}
 
+	// TODO: Probar en un futuro cuando esté el front
+	/**
+	 * Método para eliminar una url
+	 */
+	@DeleteMapping("/delete-url")
+	/**
+	 * Método para eliminar la url
+	 * 
+	 * @param shortUrl
+	 * @return
+	 */
+	public ResponseEntity<?> deleteUrlByUser(ShortenedURL shortUrl) {
+		shortenedService.deleteUrlByUser(shortUrl);
+		return ResponseEntity.ok("URL eliminada correctamente");
+
+	}
+
 }

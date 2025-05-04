@@ -55,9 +55,19 @@ public interface ShortenedRepository extends JpaRepository<ShortenedURL, Long> {
 	 * @return Optional<ShortenedURL>
 	 */
 	Optional<ShortenedURL> findByShortUrlAndUserUrl(String shortUrl, User user);
-	
+
+	/**
+	 * Elimina la url del usuario
+	 * 
+	 * @param shortUrl
+	 * @param user
+	 * @return Optional<ShortenedURL>
+	 */
+	Optional<ShortenedURL> deleteByShortUrlAndUserUrl(ShortenedURL shortUrl, User user);
+
 	/**
 	 * Busca si existe esa url corta
+	 * 
 	 * @param shortUrl
 	 * @param user
 	 * @return boolean

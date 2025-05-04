@@ -52,27 +52,39 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		// Autenticación del usuario
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		// Obtención del user para guardar las url acortadas en su usuario
-		User user = userRepository.findByEmail(userEmail)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
 		// Se genera la url acortada
 		String shortUrl = generatedShortUrl();
 
-		// Creamos un nuevo objeto para guardarlo en la bd
-		ShortenedURL shortenedUrl = new ShortenedURL();
-		shortenedUrl.setOriginalUrl(originalUrl);
-		shortenedUrl.setShortUrl(shortUrl);
-		shortenedUrl.setDateCreated(System.currentTimeMillis());
-		shortenedUrl.setUserUrl(user);
+		// Validación por si el usuario está registrado o no
+		if (userEmail != "anonymousUser") {
+			// Obtención del user para guardar las url acortadas en su usuario
+			User user = userRepository.findByEmail(userEmail)
+					.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		shortenedRepository.save(shortenedUrl);
+			// Creamos un nuevo objeto para guardarlo en la bd
+			ShortenedURL shortenedUrl = new ShortenedURL();
+			shortenedUrl.setOriginalUrl(originalUrl);
+			shortenedUrl.setShortUrl(shortUrl);
+			shortenedUrl.setDateCreated(System.currentTimeMillis());
+			shortenedUrl.setUserUrl(user);
+			shortenedRepository.save(shortenedUrl);
+		} else {
+
+			// Creamos un nuevo objeto para guardarlo en la bd
+			ShortenedURL shortenedUrl = new ShortenedURL();
+			shortenedUrl.setOriginalUrl(originalUrl);
+			shortenedUrl.setShortUrl(shortUrl);
+			shortenedUrl.setDateCreated(System.currentTimeMillis());
+			shortenedUrl.setUserUrl(null);
+			shortenedRepository.save(shortenedUrl);
+		}
 		// Devolvemos la URL acortada con la base insertada
 		return BASE_URL + shortUrl;
 	}
 
 	/**
-	 * Acorta la URL pero personalizada por el usuario
+	 * Acorta la URL pero personalizada por el usuario (Permite generarla sin
+	 * autentificarse)
 	 * 
 	 * @param originalUrl
 	 * @param customUrl
@@ -185,7 +197,27 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		return pngOutputStream.toByteArray();
 	}
 
-	// TODO: Hacer método para borrar URL
+	public void deleteUrlByUser(ShortenedURL shortUrl) {
+		// Obtiene el email
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		shortenedRepository.deleteByShortUrlAndUserUrl(shortUrl, user);
+	}
+
+	/**
+	 * Método para borrar la url
+	 * 
+	 * @param shortUrl
+	 */
+	public void deleteUrl(ShortenedURL shortUrl) {
+
+		shortenedRepository.delete(shortUrl);
+
+	}
+
 	/**
 	 * Método para borrar el usuario
 	 */
