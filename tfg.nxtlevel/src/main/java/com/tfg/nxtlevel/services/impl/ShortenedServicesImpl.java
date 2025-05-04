@@ -57,7 +57,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		// Se genera la url acortada
-		String shortUrl = BASE_URL + generatedShortUrl();
+		String shortUrl = generatedShortUrl();
 
 		// Creamos un nuevo objeto para guardarlo en la bd
 		ShortenedURL shortenedUrl = new ShortenedURL();
@@ -68,7 +68,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
-		return shortUrl;
+		return BASE_URL + shortUrl;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		User user = userRepository.findByEmail(userEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		String shortUrl = BASE_URL + generatedCustomShortUrl(customUrl);
+		String shortUrl = generatedCustomShortUrl(customUrl);
 
 		// Valida si el usuario tiene otra url con el mismo nombre
 		if (shortenedRepository.existsByShortUrlAndUserUrl(shortUrl, user)) {
@@ -103,7 +103,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		shortenedRepository.save(shortenedUrl);
 		// Devolvemos la URL acortada con la base insertada
-		return shortUrl;
+		return BASE_URL + shortUrl;
 	}
 
 	/**
@@ -147,6 +147,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		return custom;
 	}
 
+	// TODO: Borrar este método
 	/**
 	 * Busca en concreto una url del usuario
 	 * 
@@ -179,7 +180,8 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		// Busca todos las url de ese email desde el dto
 		return shortenedRepository.findAllByUserUrl(user).stream()
-				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), url.getShortUrl())).collect(Collectors.toList());
+				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), BASE_URL + "/" + url.getShortUrl()))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -200,6 +202,19 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
 
 		return pngOutputStream.toByteArray();
+	}
+
+	/**
+	 * Decodifica la url para obtener la ultima parte
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public String decodeUrl(String url) {
+		if (url == null || !url.contains("/")) {
+			return null;
+		}
+		return url.substring(url.lastIndexOf('/') + 1);
 	}
 
 }
