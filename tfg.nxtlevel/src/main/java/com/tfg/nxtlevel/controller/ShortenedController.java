@@ -26,7 +26,7 @@ import com.tfg.nxtlevel.services.impl.ShortenedServicesImpl;
 @RestController
 @RequestMapping("/api/v1")
 //Permitir peticiones desde cualquier origen (Habilita el CORS)
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ShortenedController {
 
 	@Autowired
@@ -118,17 +118,15 @@ public class ShortenedController {
 	}
 
 	// TODO: Probar en un futuro cuando esté el front
-	/**
-	 * Método para eliminar una url
-	 */
-	@DeleteMapping("/delete-url")
+
 	/**
 	 * Método para eliminar la url
 	 * 
 	 * @param shortUrl
 	 * @return
 	 */
-	public ResponseEntity<?> deleteUrlByUser(ShortenedURL shortUrl) {
+	@DeleteMapping("/delete-url")
+	public ResponseEntity<?> deleteUrlByUser(@RequestBody ShortenedURL shortUrl) {
 		shortenedService.deleteUrlByUser(shortUrl);
 		return ResponseEntity.ok("URL eliminada correctamente");
 
