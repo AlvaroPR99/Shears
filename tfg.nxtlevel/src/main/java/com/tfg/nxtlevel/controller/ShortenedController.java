@@ -1,5 +1,6 @@
 package com.tfg.nxtlevel.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.tfg.nxtlevel.dto.ShortenedURLDTO;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
 import com.tfg.nxtlevel.persistence.repositories.UserRepository;
@@ -130,6 +132,16 @@ public class ShortenedController {
 		shortenedService.deleteUrlByUser(shortUrl);
 		return ResponseEntity.ok("URL eliminada correctamente");
 
+	}
+
+	/**
+	 * Método para obtener las url de ese usuario
+	 * 
+	 * @return List<ShortenedURLDTO>
+	 */
+	@GetMapping("/get-users")
+	public List<ShortenedURLDTO> getUserUrl() {
+		return shortenedService.getAllUserUrl();
 	}
 
 }
