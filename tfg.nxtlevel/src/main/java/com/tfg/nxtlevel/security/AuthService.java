@@ -1,9 +1,12 @@
 package com.tfg.nxtlevel.security;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,7 +48,7 @@ public class AuthService {
 	 * @param request
 	 * @return new TokenResponse(jwtToken, refreshToken);
 	 */
-	public TokenResponse register(final RegisterRequest request) {
+	public ResponseEntity<?> register(final RegisterRequest request) {
 		final User user = new User(request.getName(), request.getEmail(),
 				passwordEncoder.encode(request.getPassword()));
 
@@ -53,8 +56,13 @@ public class AuthService {
 		final String jwtToken = jwtService.generateToken(savedUser);
 		final String refreshToken = jwtService.generateRefreshToken(savedUser);
 
-		saveUserToken(savedUser, jwtToken);
-		return new TokenResponse(jwtToken, refreshToken);
+		Map<String, Object> response = new HashMap<>();
+		response.put("name", user.getName());
+		response.put("message", "Registro exitoso");
+		response.put("refresh_token", refreshToken);
+		response.put("access_token", jwtToken);
+
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -63,7 +71,7 @@ public class AuthService {
 	 * @param request
 	 * @return new TokenResponse(accessToken, refreshToken);
 	 */
-	public TokenResponse authenticate(final AuthRequest request) {
+	public ResponseEntity<?> authenticate(final AuthRequest request) {
 		try {
 			authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -78,7 +86,13 @@ public class AuthService {
 		final String refreshToken = jwtService.generateRefreshToken(user);
 		revokeAllUserTokens(user);
 		saveUserToken(user, accessToken);
-		return new TokenResponse(accessToken, refreshToken);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("refresh_token", refreshToken);
+		response.put("access_token", accessToken);
+		response.put("name", user.getName());
+
+		return ResponseEntity.ok(response);
 	}
 
 	/**
