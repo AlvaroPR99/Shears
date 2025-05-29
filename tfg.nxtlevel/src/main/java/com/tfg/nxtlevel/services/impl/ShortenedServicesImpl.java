@@ -42,7 +42,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 	/**
 	 * Base que tendrán todas la URL
 	 */
-	private static final String BASE_URL = "https://Shears.com/";
+	private static final String BASE_URL = "http://localhost:8080/Shears/s";
 
 	/**
 	 * Acorta la URL mediante la URL original que se le muestra

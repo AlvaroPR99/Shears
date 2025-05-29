@@ -1,5 +1,7 @@
 package com.tfg.nxtlevel.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.tfg.nxtlevel.persistence.entities.Token;
 import com.tfg.nxtlevel.persistence.repositories.TokenRepository;
@@ -35,14 +40,28 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						authz -> authz.requestMatchers("/api/auth/**", "/api/auth/login", "/api/v1/shorten").permitAll()
-								.anyRequest().authenticated())
+		http.csrf(csrf -> csrf.disable()).cors() // <<--- HABILITAMOS CORS AQUÍ
+				.and()
+				.authorizeHttpRequests(authz -> authz
+						.requestMatchers("/api/auth/**", "/api/auth/login", "/api/v1/shorten", "/Shears/s/**")
+						.permitAll().anyRequest().authenticated())
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:4200")); // <-- FRONTEND
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		config.setAllowCredentials(true); // Si usas cookies o sesiones (opcional)
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
 	}
 
 	private void logout(final HttpServletRequest request, final HttpServletResponse response,

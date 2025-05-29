@@ -26,9 +26,9 @@ import com.tfg.nxtlevel.persistence.repositories.UserRepository;
 import com.tfg.nxtlevel.services.impl.ShortenedServicesImpl;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/Shears")
 //Permitir peticiones desde cualquier origen (Habilita el CORS)
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200/**")
 public class ShortenedController {
 
 	@Autowired
@@ -74,7 +74,7 @@ public class ShortenedController {
 	 * @param shortCode
 	 * @return
 	 */
-	@GetMapping("/{shortCode}")
+	@GetMapping("/s/{shortCode}")
 	public ResponseEntity<Object> redirectToOriginal(@PathVariable String shortCode) {
 		Optional<String> originalUrl = shortenedService.getOriginalUrl(shortCode);
 
