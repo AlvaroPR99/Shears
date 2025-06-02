@@ -173,7 +173,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 
 		// Busca todos las url de ese email desde el dto
 		return shortenedRepository.findAllByUserUrl(user).stream()
-				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), BASE_URL + "/" + url.getShortUrl()))
+				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), BASE_URL + url.getShortUrl()))
 				.collect(Collectors.toList());
 	}
 

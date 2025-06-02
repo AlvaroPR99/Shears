@@ -101,12 +101,16 @@ public class ShortenedController {
 		User user = userRepository.findByEmail(userEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+		String BaseUrl = "http://localhost:8080/Shears/s/";
+
 		// Buscar la URL solo si pertenece al usuario
 		ShortenedURL url = shortenedRepository.findByShortUrlAndUserUrl(shortCode, user)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes acceso a esta URL"));
 
+		String completeUrl = BaseUrl + shortCode;
+
 		// Generar el QR
-		byte[] qrImage = shortenedService.generateQR(shortCode, 250, 250);
+		byte[] qrImage = shortenedService.generateQR(completeUrl, 250, 250);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_PNG);
