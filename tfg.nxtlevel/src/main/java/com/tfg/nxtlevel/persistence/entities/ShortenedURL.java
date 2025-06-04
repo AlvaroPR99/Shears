@@ -15,10 +15,8 @@ import jakarta.persistence.UniqueConstraint;
  * Clase entidad para el acortador de URL
  */
 @Entity
-@Table(name = "T_SHORTENED_URL",
-uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"C_SHORT_URL", "C_USER_URL"})
-    })
+@Table(name = "T_SHORTENED_URL", uniqueConstraints = {
+		@UniqueConstraint(columnNames = { "C_SHORT_URL", "C_USER_URL" }) })
 public class ShortenedURL {
 
 	/**
@@ -37,7 +35,7 @@ public class ShortenedURL {
 	/**
 	 * URL acortada
 	 */
-	@Column(name = "C_SHORT_URL", nullable = false)
+	@Column(name = "C_SHORT_URL", nullable = false, unique = true)
 	private String shortUrl;
 
 	/**

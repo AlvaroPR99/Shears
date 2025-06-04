@@ -56,7 +56,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		String shortUrl = generatedShortUrl();
 
 		// Validación por si el usuario está registrado o no
-		if (userEmail != "anonymousUser") {
+		if (!"anonymousUser".equals(userEmail)) {
 			// Obtención del user para guardar las url acortadas en su usuario
 			User user = userRepository.findByEmail(userEmail)
 					.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -207,16 +207,15 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		shortenedRepository.deleteByShortUrlAndUserUrl(shortUrl, user);
 	}
 
+	public void deleteUrl(String shortUrl) {
+		shortenedRepository.deleteByShortUrl(shortUrl);
+	}
+
 	/**
 	 * Método para borrar la url
 	 * 
 	 * @param shortUrl
 	 */
-	public void deleteUrl(ShortenedURL shortUrl) {
-
-		shortenedRepository.delete(shortUrl);
-
-	}
 
 	/**
 	 * Método para borrar el usuario

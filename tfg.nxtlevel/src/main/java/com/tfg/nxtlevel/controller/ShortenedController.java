@@ -28,6 +28,8 @@ import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
 import com.tfg.nxtlevel.persistence.repositories.UserRepository;
 import com.tfg.nxtlevel.services.impl.ShortenedServicesImpl;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/Shears")
 //Permitir peticiones desde cualquier origen (Habilita el CORS)
@@ -139,11 +141,15 @@ public class ShortenedController {
 	 * @param shortUrl
 	 * @return
 	 */
-	@DeleteMapping("/delete-url")
-	public ResponseEntity<?> deleteUrlByUser(@RequestBody ShortenedURL shortUrl) {
-		shortenedService.deleteUrlByUser(shortUrl);
+	@DeleteMapping("/delete-url/{shortUrl}")
+	@Transactional
+	public ResponseEntity<?> deleteUrl(@PathVariable String shortUrl) {
+		Optional<ShortenedURL> urlOptional = shortenedRepository.findByShortUrl(shortUrl);
+		if (urlOptional.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("URL no encontrada con el código: " + shortUrl);
+		}
+		shortenedRepository.deleteByShortUrl(shortUrl);
 		return ResponseEntity.ok("URL eliminada correctamente");
-
 	}
 
 	/**

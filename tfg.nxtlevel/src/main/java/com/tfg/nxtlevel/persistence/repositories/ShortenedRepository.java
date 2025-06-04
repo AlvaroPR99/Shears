@@ -66,6 +66,13 @@ public interface ShortenedRepository extends JpaRepository<ShortenedURL, Long> {
 	Optional<ShortenedURL> deleteByShortUrlAndUserUrl(ShortenedURL shortUrl, User user);
 
 	/**
+	 * Elimina la url
+	 * 
+	 * @param shortUrl
+	 */
+	void deleteByShortUrl(String shortUrl);
+
+	/**
 	 * Busca si existe esa url corta
 	 * 
 	 * @param shortUrl
