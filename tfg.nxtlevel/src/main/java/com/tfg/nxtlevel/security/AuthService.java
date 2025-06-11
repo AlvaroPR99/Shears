@@ -56,6 +56,9 @@ public class AuthService {
 		final String jwtToken = jwtService.generateToken(savedUser);
 		final String refreshToken = jwtService.generateRefreshToken(savedUser);
 
+		revokeAllUserTokens(savedUser);
+		saveUserToken(savedUser, jwtToken);
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("name", user.getName());
 		response.put("message", "Registro exitoso");

@@ -1,56 +1,52 @@
 package com.tfg.nxtlevel.dto;
 
-/**
- * DTO de las url acortadas
- */
 public class ShortenedURLDTO {
 
 	private String originalUrl;
 	private String shortUrl;
+	private int accessCount;
+	private Long dateCreated;
 
-	/**
-	 * @return the originalUrl
-	 */
+	public ShortenedURLDTO() {
+		// Constructor vacío
+	}
+
+	public ShortenedURLDTO(String originalUrl, String shortUrl, int accessCount, Long dateCreated) {
+		this.originalUrl = originalUrl;
+		this.shortUrl = shortUrl;
+		this.accessCount = accessCount;
+		this.dateCreated = dateCreated;
+	}
+
 	public String getOriginalUrl() {
 		return originalUrl;
 	}
 
-	/**
-	 * @param originalUrl the originalUrl to set
-	 */
 	public void setOriginalUrl(String originalUrl) {
 		this.originalUrl = originalUrl;
 	}
 
-	/**
-	 * @return the shortUrl
-	 */
 	public String getShortUrl() {
 		return shortUrl;
 	}
 
-	/**
-	 * @param shortUrl the shortUrl to set
-	 */
 	public void setShortUrl(String shortUrl) {
 		this.shortUrl = shortUrl;
 	}
 
-	/**
-	 * @param originalUrl
-	 * @param shortUrl
-	 */
-	public ShortenedURLDTO(String originalUrl, String shortUrl) {
-		super();
-		this.originalUrl = originalUrl;
-		this.shortUrl = shortUrl;
+	public int getAccessCount() {
+		return accessCount;
 	}
 
-	/**
-	 * 
-	 */
-	public ShortenedURLDTO() {
-		super();
+	public void setAccessCount(int accessCount) {
+		this.accessCount = accessCount;
 	}
 
+	public Long getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Long dateCreated) {
+		this.dateCreated = dateCreated;
+	}
 }

@@ -2,6 +2,8 @@ package com.tfg.nxtlevel.services.inter;
 
 import java.util.Optional;
 
+import com.tfg.nxtlevel.dto.UserRequest;
+
 public interface ShortenedServices {
 
 	/**
@@ -43,4 +45,18 @@ public interface ShortenedServices {
 	 * @return
 	 */
 	String generatedCustomShortUrl(String custom);
+
+	/**
+	 * Incrementa el contador
+	 * 
+	 * @param shortenedUrl
+	 */
+	void incrementAccessCount(String shortenedUrl);
+
+	/**
+	 * Devulve datos del usuario
+	 * 
+	 * @return
+	 */
+	Optional<UserRequest> getUserData();
 }

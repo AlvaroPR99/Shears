@@ -18,6 +18,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.tfg.nxtlevel.dto.ShortenedURLDTO;
+import com.tfg.nxtlevel.dto.UserRequest;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.entities.User;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
@@ -102,7 +103,7 @@ public class ShortenedServicesImpl implements ShortenedServices {
 		String shortUrl = generatedCustomShortUrl(customUrl);
 
 		// Valida si el usuario tiene otra url con el mismo nombre
-		if (shortenedRepository.existsByShortUrlAndUserUrl(shortUrl, user)) {
+		if (shortenedRepository.existsByShortUrl(shortUrl)) {
 			throw new IllegalArgumentException("Ya existe esta URL");
 		}
 
@@ -172,8 +173,9 @@ public class ShortenedServicesImpl implements ShortenedServices {
 				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
 		// Busca todos las url de ese email desde el dto
-		return shortenedRepository.findAllByUserUrl(user).stream()
-				.map(url -> new ShortenedURLDTO(url.getOriginalUrl(), BASE_URL + url.getShortUrl()))
+		return shortenedRepository
+				.findAllByUserUrl(user).stream().map(url -> new ShortenedURLDTO(url.getOriginalUrl(),
+						BASE_URL + url.getShortUrl(), url.getAccessCount(), url.getDateCreated()))
 				.collect(Collectors.toList());
 	}
 
@@ -229,6 +231,30 @@ public class ShortenedServicesImpl implements ShortenedServices {
 				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
 		userRepository.delete(user);
+	}
+
+	public void incrementAccessCount(String shortenedUrl) {
+		// Buscar la URL acortada en la base de datos
+		ShortenedURL shortenedURL = shortenedRepository.findByShortUrl(shortenedUrl)
+				.orElseThrow(() -> new IllegalArgumentException("La URL acortada no existe"));
+
+		// Incrementar el contador de accesos
+		shortenedURL.incrementAccessCount();
+
+		// Guardar los cambios en la base de datos
+		shortenedRepository.save(shortenedURL);
+	}
+
+	public Optional<UserRequest> getUserData() {
+
+		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		UserRequest userDTO = new UserRequest(user.getName(), user.getEmail(), user.getPassword());
+
+		return Optional.of(userDTO);
 	}
 
 }

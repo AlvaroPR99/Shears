@@ -29,7 +29,7 @@ public class ShortenedURL {
 	/**
 	 * URL original
 	 */
-	@Column(name = "C_ORIGINAL_URL", nullable = false)
+	@Column(name = "C_ORIGINAL_URL", nullable = false, length = 1000)
 	private String originalUrl;
 
 	/**
@@ -49,6 +49,12 @@ public class ShortenedURL {
 	 */
 	@Column(name = "C_DATE_CREATED", nullable = false)
 	private Long dateCreated = System.currentTimeMillis();
+
+	/**
+	 * Contador de accesos a la URL
+	 */
+	@Column(name = "C_ACCESS_COUNT", nullable = false)
+	private int accessCount = 0;
 
 	/**
 	 * @return the id
@@ -146,6 +152,18 @@ public class ShortenedURL {
 	public ShortenedURL get() {
 
 		return null;
+	}
+
+	public int getAccessCount() {
+		return accessCount;
+	}
+
+	public void setAccessCount(int accessCount) {
+		this.accessCount = accessCount;
+	}
+
+	public void incrementAccessCount() {
+		this.accessCount++; // Método que incrementa el contador
 	}
 
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.tfg.nxtlevel.dto.ShortenedURLDTO;
+import com.tfg.nxtlevel.dto.UserRequest;
 import com.tfg.nxtlevel.persistence.entities.ShortenedURL;
 import com.tfg.nxtlevel.persistence.entities.User;
 import com.tfg.nxtlevel.persistence.repositories.ShortenedRepository;
@@ -81,11 +82,18 @@ public class ShortenedController {
 	 */
 	@GetMapping("/s/{shortCode}")
 	public ResponseEntity<Object> redirectToOriginal(@PathVariable String shortCode) {
+		// Buscar la URL original asociada al código corto
 		Optional<String> originalUrl = shortenedService.getOriginalUrl(shortCode);
 
-		// Devuelve la solicitud https del original
-		return originalUrl.map(url -> ResponseEntity.status(HttpStatus.FOUND).header("Location", url).build())
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		if (originalUrl.isPresent()) {
+			// Incrementar el contador de accesos para la URL acortada
+			shortenedService.incrementAccessCount(shortCode);
+
+			// Redirigir al usuario a la URL original
+			return ResponseEntity.status(HttpStatus.FOUND).header("Location", originalUrl.get()).build();
+		}
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	/**
@@ -130,7 +138,8 @@ public class ShortenedController {
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteUser() {
 		shortenedService.deleteUser();
-		return ResponseEntity.ok("Usuario eliminado correctamente");
+		return ResponseEntity.ok(Map.of("message", "Usuario eliminado correctamente"));
+
 	}
 
 	// TODO: Probar en un futuro cuando esté el front
@@ -149,7 +158,8 @@ public class ShortenedController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("URL no encontrada con el código: " + shortUrl);
 		}
 		shortenedRepository.deleteByShortUrl(shortUrl);
-		return ResponseEntity.ok("URL eliminada correctamente");
+		return ResponseEntity.ok(Map.of("message", "URL eliminada correctamente"));
+
 	}
 
 	/**
@@ -160,6 +170,11 @@ public class ShortenedController {
 	@GetMapping("/get-users")
 	public List<ShortenedURLDTO> getUserUrl() {
 		return shortenedService.getAllUserUrl();
+	}
+
+	@GetMapping("/get-user-data")
+	public Optional<UserRequest> getUserData() {
+		return shortenedService.getUserData();
 	}
 
 }
